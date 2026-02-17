@@ -1,0 +1,37 @@
+node_modules/
+**/node_modules/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+# Env files (never commit secrets)
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+backend/gcp-vision-key.json
+
+backend/gcp-vision-key.json
+
+.env.local
+# --- AI a databázové artefakty ---
+backend/app/modules/ai/rag/chroma_db/
+data/database.db
+
+# --- Uploady (nemají být v Gitu) ---
+backend/static/uploads/
+backend/static/uploads/inbox_webp/
+backend/static/uploads/second_inbox_webp/
+
+# --- Lokální testovací obrázky ---
+*.webp
+
+# --- Lokální zálohy ---
+backups/
+*.tgz
+
+# --- Archiv starých uploadů (lokální) ---
+_old_uploads/

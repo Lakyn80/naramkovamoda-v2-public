@@ -1,0 +1,62 @@
+services:
+  backend:
+    image: naramkovamoda-v2-backend:${BUILD_TAG:-latest}
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    env_file:
+      - .env.dev       # <-- TADY SE NAČTOU TVÉ KLÍČE
+    environment:
+      RUNNING_IN_DOCKER: "1"
+      GOOGLE_APPLICATION_CREDENTIALS: "/app/gcp-vision-key.json"
+
+      # Explicitně říkáme Dockeru, že tyto klíče MŮŽOU být v .env.dev
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      DEEPSEEK_API_KEY: "${DEEPSEEK_API_KEY}"
+      NMM_AI_PIPELINE: "${NMM_AI_PIPELINE}"
+
+    volumes:
+      - ./data:/app/data
+      - ./backend/static/uploads:/app/static/uploads
+      - ./backend/app/modules/ai/rag/chroma_db:/app/app/modules/ai/rag/chroma_db
+      - ./backend/gcp-vision-key.json:/app/gcp-vision-key.json
+      - invoices_data:/app/static/invoices
+    ports:
+      - "8088:8080"
+
+  frontend-client:
+    build:
+      context: ./frontend/client
+      dockerfile: ../../docker/frontend.client.Dockerfile
+    depends_on:
+      - backend
+      - redis
+    environment:
+      NEXT_PUBLIC_API_BASE: /api
+      NMM_BACKEND_URL: http://backend:8080
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3002:3002"
+
+  frontend-admin:
+    build:
+      context: ./frontend/admin
+      dockerfile: ../../docker/frontend.admin.Dockerfile
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8088
+      NMM_BACKEND_URL: http://backend:8080
+    ports:
+      - "3012:3001"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  invoices_data:

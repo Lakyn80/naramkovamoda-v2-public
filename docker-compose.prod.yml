@@ -1,0 +1,64 @@
+services:
+  backend:
+    image: lakyn80/naramkova-backend:${TAG:-latest}
+    env_file:
+      - /home/lucky/.env.production
+    environment:
+      RUNNING_IN_DOCKER: "1"
+      DATABASE_URL: "${DATABASE_URL}"
+    volumes:
+      - chroma_data:/app/app/modules/ai/rag/chroma_db
+      - ./data:/app/data
+      - ./static/uploads:/app/static/uploads
+    ports:
+      - "9050:5050"
+    command:
+      [
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "5050",
+        "--proxy-headers",
+        "--forwarded-allow-ips=*",
+      ]
+    container_name: nmm-backend
+    restart: unless-stopped
+
+  frontend:
+    image: lakyn80/naramkova-frontend-client:${TAG:-latest}
+    depends_on:
+      - backend
+      - redis
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_BASE: /api
+      NMM_BACKEND_URL: http://backend:5050
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "9080:3000"
+    container_name: nmm-frontend
+    restart: unless-stopped
+
+  frontend-admin:
+    image: lakyn80/naramkova-frontend-admin:${TAG:-latest}
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_BASE: /api
+      NMM_BACKEND_URL: http://backend:5050
+    ports:
+      - "3012:3001"
+    container_name: nmm-frontend-admin
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+volumes:
+  chroma_data:

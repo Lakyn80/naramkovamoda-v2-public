@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+pydantic-settings
+sqlalchemy
+qrcode
+pillow
+pillow-heif
+reportlab
+psycopg2-binary
+python-multipart
+openpyxl
+passlib[bcrypt]
+openai
+google-cloud-vision
+chromadb
+sentence-transformers

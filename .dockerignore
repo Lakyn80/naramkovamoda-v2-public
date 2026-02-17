@@ -1,0 +1,16 @@
+.git
+.gitignore
+**/node_modules
+**/.next
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+__pycache__/
+**/__pycache__/
+*.pyc
+data/
+backend/static/uploads/
+backend/static/uploads/inbox_webp/
+backend/static/uploads/second_inbox_webp/
+*.webp
