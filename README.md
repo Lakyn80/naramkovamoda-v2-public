@@ -82,4 +82,4 @@ pytest backend/tests
 - Do not commit real `.env*` files or private keys.
 
 ## License
-No license file is included yet. Add one before commercial/public reuse.
+MIT License © 2026 Lukiora
